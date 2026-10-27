@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="robots" content="noindex,nofollow">
+<title>Questionnaire · Académie Hu Xiaofei</title>
+<style>
+:root{--ink:#231910;--muted:#6e6256;--line:#e6d9c8;--tea:#3a5f4b;--cin:#8f3d2c;--paper:#fffaf2;--card:#fff;--soft:#eef4ef}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;overflow-x:hidden;background:#ece4d6;color:var(--ink);font:16px/1.45 -apple-system,"PingFang SC","PT Sans",Arial,sans-serif}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.wrap{width:100%;max-width:560px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--paper);display:flex;flex-direction:column;overflow-x:hidden}
+header{padding:14px 18px 10px;border-bottom:1px solid var(--line);background:#fbf6ec;position:sticky;top:0;z-index:5;min-width:0}
+main{flex:1;padding:16px 16px 24px;min-width:0;overflow-wrap:anywhere}
+.kicker{margin:0;color:var(--tea);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.h1{margin:4px 0 0;font-size:18px;font-weight:750}
+.bar{height:6px;background:#eadfce;border-radius:99px;margin-top:10px;overflow:hidden}
+.bar>i{display:block;height:100%;width:0;background:var(--tea);transition:width .2s}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:6px}
+.sec{color:var(--cin);font-weight:750;font-size:13px;letter-spacing:.04em;margin:0 0 6px}
+.note{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 12px}
+.q h2{margin:0 0 8px;font-size:16.5px}
+.hint{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:99px;background:#f3eadc;color:var(--muted);font-size:11px;font-weight:700}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1.5px solid var(--line);border-radius:12px;margin:0 0 8px;background:#fff;cursor:pointer}
+.opt.on{border-color:var(--tea);background:var(--soft)}
+.opt input{margin-top:3px;accent-color:var(--tea);width:18px;height:18px;flex:none}
+.other{width:100%;margin-top:6px;border:none;border-bottom:1px solid #cbbba6;background:transparent;font:inherit;padding:6px 0}
+textarea,.fill{width:100%;border:1px solid var(--line);border-radius:10px;background:#fffdf9;font:inherit;padding:10px;margin-top:6px}
+textarea{min-height:90px}
+textarea.long{min-height:180px}
+.row{margin:0 0 12px}
+.row b{display:block;margin:0 0 6px;font-size:14px}
+select{width:100%;font:16px/1.4 inherit;padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff}
+.nps{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.nps button{padding:10px 0;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:750;font-size:15px}
+.nps button.on{background:var(--tea);color:#fff;border-color:var(--tea)}
+.npscap{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:6px}
+.nav{display:flex;gap:8px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#fff;position:sticky;bottom:0}
+.nav button{flex:1;height:48px;border:0;border-radius:12px;font-size:16px;font-weight:750}
+.back{background:#f3eadc;color:var(--ink)}
+.next{background:var(--tea);color:#fff}
+.intro p{margin:0 0 10px}
+.hero{padding:8px 4px 4px}
+.pill{display:inline-block;margin:0 6px 6px 0;padding:3px 9px;border:1px solid var(--line);border-radius:99px;font-size:12px;color:var(--muted)}
+.ok{background:var(--soft);border:1px solid #c9d9ce;border-radius:14px;padding:16px}
+.copy{margin-top:12px;width:100%;height:46px;border:0;border-radius:12px;background:var(--ink);color:#f4eadb;font-weight:750}
+.err{color:var(--cin);font-size:13px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="kicker">Hu Xiaofei Academy</p>
+  <div class="h1" id="htitle"></div>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="meta"><span id="step"></span><span>anonyme</span></div>
+</header>
+<main id="main"></main>
+<div class="nav" id="nav"></div>
+</div>
+<script>
+const DATA = [{"id": "q1", "n": 1, "type": "single", "title": "L'année prochaine, s'il y avait ces trois possibilités, laquelle préférez-vous ?", "hint": "une réponse", "extra_long": "Si vous voulez, écrivez pourquoi vous préférez celle-ci.", "opts": [{"v": "current", "l": "Comme cette fois : plusieurs villes, et 2 ou 3 jours à chaque endroit."}, {"v": "deep", "l": "Moins de villes, et 4 ou 5 jours à chaque endroit, pour mieux connaître la ville et approfondir les pratiques."}, {"v": "split", "l": "Séparer le tourisme et la pratique : une partie pour voir des villes et des lieux, et une autre pour se consacrer à la pratique dans un lieu de vacances."}]}, {"id": "q2", "n": 2, "type": "single", "title": "Sans compter les vols internationaux, combien de jours vous semblent adaptés ?", "hint": "une réponse", "opts": ["8–10 jours", "11–16 jours", "Environ 17 jours, comme cette fois", "18 jours ou plus"]}, {"id": "q3", "n": 3, "type": "single", "title": "L'année prochaine, comment préférez-vous loger ?", "hint": "une réponse", "opts": ["Dans un hôtel meilleur, ni à la montagne ni dans un temple.", "À la montagne ou dans un temple taoïste, en retraite ; des conditions simples conviennent.", "Les deux : 1 ou 2 nuits à la montagne ou au temple, et le reste à l'hôtel.", "Les deux : 3 ou 4 nuits à la montagne ou au temple, et le reste à l'hôtel.", "Les deux : environ la moitié des nuits à la montagne ou au temple.", "Les deux : la plupart des nuits à la montagne ou au temple."]}, {"id": "q4", "n": 4, "type": "single", "title": "Si l'hôtel est clairement meilleur que cette fois (lit, salle de bain et calme), combien ajouteriez-vous, en plus du prix de ce voyage ? En dollars des États-Unis. Si vous préférez la retraite et n'avez pas besoin d'un meilleur hôtel, choisissez « Pas besoin d'ajouter ».", "hint": "une réponse", "opts": ["Pas besoin d'ajouter ; que cela reste comme maintenant", "Jusqu'à 200 dollars", "Environ 400 dollars", "Environ 800 dollars", "1000 dollars ou plus", "Je préfère ne pas répondre"]}, {"id": "q5", "n": 5, "type": "multi", "allowOther": true, "title": "La prochaine fois, que voulez-vous pratiquer ? Cela peut être une pratique de ce voyage ou une que vous n'avez pas encore faite.", "hint": "plusieurs réponses possibles", "note": "Si vous voulez un nom précis qui n'est pas dans la liste, choisissez « Autre » et écrivez-le.", "opts": ["Qigong pour la santé", "Daoyin yangsheng gong", "Prescriptions de daoyin pour la santé (série d'ordonnances : par exemple, baisser la tension, baisser le sucre, humidifier les poumons, renforcer les reins, insomnie)", "Posture debout (zhan zhuang)", "Taï-chi", "Comme ce voyage", {"v": "other", "l": "Autre"}]}, {"id": "q6", "n": 6, "type": "multi_fill", "title": "L'année prochaine, dans quelle ville voulez-vous aller, et qu'aimeriez-vous y expérimenter ?", "fills": ["Ville", "Ce que vous aimeriez expérimenter"]}, {"id": "q7", "n": 7, "type": "single", "allowOther": true, "title": "Parmi les pratiques de ce voyage, laquelle vous a semblé la meilleure ?", "hint": "une réponse", "opts": ["« Douze Exercices de Longévité Xiangu »", "« Neuf sections de brocart méridiens de Yang Jizhou »", "« Baduanjin Qinghua »", "À peu près les mêmes", {"v": "other", "l": "Autre"}]}, {"id": "q8", "n": 8, "type": "scores", "maxScore": 5, "title": "Ces villes du voyage. Donnez une note à chacune.", "note": "De 0 à 5. 5 est la note la plus haute.", "rows": ["Jinhua", "Hangzhou", "Quzhou", "Kaihua", "Jingdezhen", "Huangshan", "Shanghai"]}, {"id": "q9", "n": 9, "type": "single", "allowOther": true, "title": "De ce voyage, quel lieu avez-vous préféré ?", "hint": "une réponse", "opts": ["Palais Huang Daxian", "Parc scénique Shuanglong", "Lac de l'Ouest", "Temple Lingyin", "Hôpital de médecine chinoise de Quzhou", "Palais Genfo", "Céramique de Jingdezhen", "Hongcun ou la vieille rue de Tunxi", "Massif de Huangshan", "Musée du thé", "À peu près les mêmes", {"v": "other", "l": "Autre"}]}, {"id": "q10", "n": 10, "type": "single", "title": "Ce voyage comptait 3 soirées festives, à Quzhou, à Jingdezhen et à Huangshan. Qu'en avez-vous pensé ?", "hint": "une réponse", "opts": ["Très mal", "Plutôt mal", "Moyen", "Plutôt bien", "Très bien", "Je n'y ai presque pas participé"]}, {"id": "q11", "n": 11, "type": "single", "title": "Cette fois, il n'y a eu qu'un long trajet en autocar : de Huangshan à Shanghai, environ 6 heures. Entre les autres villes, c'était environ 1 à 2 heures. Quelle durée maximale pouvez-vous accepter pour un trajet ?", "hint": "une réponse", "opts": ["3 heures ou moins", "De 4 à 6 heures", "7 heures ou plus"]}, {"id": "q12", "n": 12, "type": "long", "title": "Si vous voulez ajouter quelque chose, écrivez-le ici : les soirées, les trajets, ce qui vous a plu ou non, ou d'autres idées pour le voyage."}];
+const PAGES = [{"id": "intro", "kind": "intro"}, {"id": "p1", "sec": "L'année prochaine · Le parcours", "note": "Cette fois, c'était du 14 au 30 octobre, soit 17 jours, avec nuit à Jinhua, Hangzhou, Quzhou, Kaihua, Jingdezhen, Huangshan et Shanghai. Dans la plupart des endroits, le séjour a duré 2 ou 3 nuits ; à Jinhua, 4 nuits ; à Shanghai, 1 nuit.", "q": ["q1"]}, {"id": "p2", "sec": "L'année prochaine · Jours et hébergement", "q": ["q2", "q3", "q4"]}, {"id": "p3", "sec": "L'année prochaine · Pratique et ville", "q": ["q5", "q6"]}, {"id": "p4", "sec": "Ce voyage", "q": ["q7", "q8", "q9", "q10", "q11", "q12"]}, {"id": "done", "kind": "done"}];
+const UI = {"formName": "Questionnaire", "anon": "anonyme", "start": "Commencer", "next": "Suivant", "send": "Envoyer", "back": "Retour", "done": "Terminé", "pillTime": "environ 8 min", "pillSkip": "on peut passer", "otherPh": "Écrivez lequel", "npsPh": "Précision", "age": "Âge", "gender": "Sexe", "summaryHead": "QUESTIONNAIRE · Académie Hu Xiaofei", "ageBit": "âge", "genderBit": "sexe", "otherBit": "autre", "failHint": "Si l'envoi n'est pas parti, copiez les réponses et envoyez-les à l'interprète par WhatsApp.", "copy": "Copier les réponses", "copied": "Copié.", "copyManual": "Sélectionnez le texte et copiez-le à la main.", "sent": "Réponses envoyées.", "notSent": "Si le message n'est pas parti, copiez les réponses ci-dessous.", "pageTitle": "Questionnaire · Académie Hu Xiaofei"};
+const answers = {};
+let idx = 0;
+const qIndex = Object.fromEntries(DATA.map(q => [q.id, q]));
+
+function routeV(){
+  const a = answers.q1;
+  return a && a.v ? a.v : '';
+}
+function visiblePages(){
+  const v = routeV();
+  return PAGES.filter(p => !p.if || p.if === v);
+}
+function labelOf(o){ return (o && o.l) ? o.l : o; }
+function valOf(o){ return (o && o.v) ? o.v : o; }
+
+function render(){
+  const pages = visiblePages();
+  if(idx < 0) idx = 0;
+  if(idx >= pages.length) idx = pages.length-1;
+  const p = pages[idx];
+  const pct = (idx) / Math.max(1, pages.length-1) * 100;
+  document.getElementById('bar').style.width = pct + '%';
+  document.getElementById('step').textContent = (idx+1) + ' / ' + pages.length;
+  const main = document.getElementById('main');
+  const nav = document.getElementById('nav');
+  if(p.kind === 'intro'){
+    document.getElementById('htitle').textContent = UI.formName;
+    main.innerHTML = `<div class="hero">
+      <h1 style="margin:0 0 8px;font-size:22px;line-height:1.3">Questionnaire pour préparer le voyage de l&#x27;année prochaine</h1>
+      <p class="note">Académie internationale de bien-être Hu Xiaofei · anonyme</p>
+      <span class="pill">${esc(UI.pillTime)}</span><span class="pill">${esc(UI.pillSkip)}</span>
+      <p>Merci d&#x27;être venus en Chine et d&#x27;avoir terminé ce voyage avec l&#x27;Académie.</p><p>Il sert à préparer le voyage de l&#x27;année prochaine. Il n&#x27;y a pas de bonne réponse.</p><p>Nous ne demandons pas le nom. Vous pouvez passer n&#x27;importe quelle question.</p>
+    </div>`;
+    nav.innerHTML = `<button class="next" type="button" id="go">${esc(UI.start)}</button>`;
+    document.getElementById('go').onclick = () => { idx++; render(); window.scrollTo(0,0); };
+    return;
+  }
+  if(p.kind === 'done'){
+    document.getElementById('htitle').textContent = UI.done;
+    main.innerHTML = `<div class="ok"><p><b>Merci. Les réponses sont enregistrées. Vous pouvez fermer la page.</b></p>
+      <p class="note">${esc(UI.failHint)}</p>
+      <textarea id="sum" readonly></textarea>
+      <button class="copy" type="button" id="copy">${esc(UI.copy)}</button>
+      <div class="err" id="msg"></div></div>`;
+    const sum = formatSummary();
+    document.getElementById('sum').value = sum;
+    nav.innerHTML = `<button class="back" type="button" id="back">${esc(UI.back)}</button>`;
+    document.getElementById('back').onclick = () => { idx--; render(); };
+    document.getElementById('copy').onclick = async () => {
+      try { await navigator.clipboard.writeText(sum); document.getElementById('msg').textContent = UI.copied; }
+      catch(e){ document.getElementById('sum').select(); document.getElementById('msg').textContent = UI.copyManual; }
+    };
+    submitAnswers(sum);
+    return;
+  }
+  document.getElementById('htitle').textContent = p.sec || '';
+  let html = '';
+  if(p.sec) html += `<div class="sec">${esc(p.sec)}</div>`;
+  if(p.note) html += `<p class="note">${esc(p.note)}</p>`;
+  for(const id of p.q) html += renderQ(qIndex[id]);
+  main.innerHTML = html;
+  bindQ(p.q);
+  nav.innerHTML = `<button class="back" type="button" id="back">${esc(UI.back)}</button>
+    <button class="next" type="button" id="go">${idx === pages.length-2 ? esc(UI.send) : esc(UI.next)}</button>`;
+  document.getElementById('back').onclick = () => { idx--; render(); window.scrollTo(0,0); };
+  document.getElementById('go').onclick = () => { idx++; render(); window.scrollTo(0,0); };
+}
+
+function esc(s){ return String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function extraBox(q){
+  if(!q.extra_long) return '';
+  return `<p class="note">${esc(q.extra_long)}</p><textarea data-extra="${q.id}"></textarea>`;
+}
+
+function renderQ(q){
+  const hint = q.hint ? `<span class="hint">${esc(q.hint)}</span>` : '';
+  const note = q.note ? `<p class="note">${esc(q.note)}</p>` : '';
+  let body = '';
+  if(q.type === 'single' || q.type === 'multi'){
+    const name = q.id;
+    const type = q.type === 'multi' ? 'checkbox' : 'radio';
+    body = (q.opts||[]).map(o => {
+      const lab = labelOf(o), val = valOf(o);
+      return `<label class="opt" data-q="${name}" data-v="${esc(val)}"><input type="${type}" name="${name}" value="${esc(val)}"><span>${esc(lab)}</span></label>`;
+    }).join('');
+    if(q.allowOther){
+      body += `<input class="other" data-other="${name}" placeholder="${esc(UI.otherPh)}" style="display:none">`;
+    }
+    body += extraBox(q);
+  } else if(q.type === 'line'){
+    body = `<input class="fill" data-text="${q.id}">`;
+  } else if(q.type === 'long' || q.type === 'text'){
+    body = `<textarea class="long" data-text="${q.id}"></textarea>`;
+  } else if(q.type === 'matrix'){
+    body = q.rows.map((r,ri) => `<div class="row"><b>${esc(r)}</b><select data-mx="${q.id}" data-row="${ri}"><option value="">—</option>${q.cols.map(c=>`<option>${esc(c)}</option>`).join('')}</select></div>`).join('')
+      + `<input class="other" data-other="${q.id}" placeholder="${esc(UI.otherPh)}">`;
+  } else if(q.type === 'nps'){
+    body = `<div class="nps">${[...Array(11).keys()].map(n=>`<button type="button" data-nps="${q.id}" data-n="${n}">${n}</button>`).join('')}</div>
+      <div class="npscap"><span>${esc(q.left||'')}</span><span>${esc(q.right||'')}</span></div>
+      <input class="other" data-other="${q.id}" placeholder="${esc(UI.npsPh)}">`;
+  } else if(q.type === 'scores'){
+    const max = q.maxScore == null ? 5 : q.maxScore;
+    body = (q.rows||[]).map((r,ri) => `<div class="row"><b>${esc(r)}</b><div class="nps">${
+      [...Array(max+1).keys()].map(n=>`<button type="button" data-score="${q.id}" data-row="${ri}" data-n="${n}">${n}</button>`).join('')
+    }</div></div>`).join('');
+  } else if(q.type === 'multi_fill'){
+    body = q.fills.map((f,i)=>`<div class="row"><b>${esc(f)}</b><input class="fill" data-fill="${q.id}" data-i="${i}"></div>`).join('');
+  } else if(q.type === 'profile'){
+    body = `<div class="row"><b>${esc(UI.age)}</b>${q.age.map(a=>`<label class="opt" data-q="${q.id}_age" data-v="${esc(a)}"><input type="radio" name="${q.id}_age" value="${esc(a)}"><span>${esc(a)}</span></label>`).join('')}</div>
+      <div class="row"><b>${esc(UI.gender)}</b>${q.gender.map(a=>`<label class="opt" data-q="${q.id}_gender" data-v="${esc(a)}"><input type="radio" name="${q.id}_gender" value="${esc(a)}"><span>${esc(a)}</span></label>`).join('')}</div>`
+      + q.fills.map((f,i)=>`<div class="row"><b>${esc(f)}</b><input class="fill" data-fill="${q.id}" data-i="${i}"></div>`).join('');
+  }
+  return `<div class="q" id="${q.id}"><h2>${q.n}. ${esc(q.title)} ${hint}</h2>${note}${body}</div>`;
+}
+
+function bindQ(ids){
+  ids.forEach(id => {
+    const q = qIndex[id];
+    document.querySelectorAll(`input[name="${id}"]`).forEach(inp => {
+      inp.onchange = () => {
+        if(q.type === 'multi'){
+          const max = q.max || 99;
+          let checked = [...document.querySelectorAll(`input[name="${id}"]:checked`)].map(x=>x.value);
+          if(checked.length > max){ inp.checked = false; checked = checked.filter(v=>v!==inp.value); }
+          const showOther = checked.indexOf('other') >= 0;
+          const othBox = document.querySelector(`[data-other="${id}"]`);
+          if(othBox && !showOther) othBox.value = '';
+          answers[id] = { v: checked, other: showOther ? ((answers[id]&&answers[id].other)||'') : '' };
+        } else {
+          const keep = (inp.value === 'other') ? ((answers[id]&&answers[id].other)||'') : '';
+          answers[id] = { v: inp.value, other: keep };
+          const oth = document.querySelector(`[data-other="${id}"]`);
+          if(oth && inp.value !== 'other') oth.value = '';
+        }
+        paint(id);
+        syncOther(id);
+      };
+    });
+    const oth = document.querySelector(`[data-other="${id}"]`);
+    if(oth){ oth.oninput = () => { answers[id] = Object.assign({v: answers[id]&&answers[id].v}, {other: oth.value}); }; }
+    document.querySelectorAll(`[data-text="${id}"]`).forEach(t => t.oninput = () => { answers[id] = Object.assign({}, answers[id], {text: t.value}); });
+    document.querySelectorAll(`[data-extra="${id}"]`).forEach(t => t.oninput = () => { answers[id] = Object.assign({}, answers[id], {extra: t.value}); });
+    document.querySelectorAll(`[data-mx="${id}"]`).forEach(s => s.onchange = () => {
+      const rows = {};
+      document.querySelectorAll(`[data-mx="${id}"]`).forEach(x => { if(x.value) rows[q.rows[x.dataset.row]] = x.value; });
+      answers[id] = Object.assign({}, answers[id], {matrix: rows});
+    });
+    document.querySelectorAll(`[data-score="${id}"]`).forEach(b => b.onclick = () => {
+      const scores = Object.assign({}, (answers[id] && answers[id].scores) || {});
+      scores[q.rows[b.dataset.row]] = b.dataset.n;
+      answers[id] = Object.assign({}, answers[id], {scores});
+      document.querySelectorAll(`[data-score="${id}"][data-row="${b.dataset.row}"]`).forEach(x => x.classList.toggle('on', x===b));
+    });
+    document.querySelectorAll(`[data-nps="${id}"]`).forEach(b => b.onclick = () => {
+      answers[id] = Object.assign({}, answers[id], {v: b.dataset.n});
+      document.querySelectorAll(`[data-nps="${id}"]`).forEach(x => x.classList.toggle('on', x===b));
+    });
+    document.querySelectorAll(`[data-fill="${id}"]`).forEach(inp => inp.oninput = () => {
+      const fills = [...document.querySelectorAll(`[data-fill="${id}"]`)].map(x=>x.value);
+      answers[id] = Object.assign({}, answers[id], {fills});
+    });
+    document.querySelectorAll(`input[name="${id}_age"]`).forEach(inp => inp.onchange = () => { answers[id] = Object.assign({}, answers[id], {age: inp.value}); paint(id+'_age'); });
+    document.querySelectorAll(`input[name="${id}_gender"]`).forEach(inp => inp.onchange = () => { answers[id] = Object.assign({}, answers[id], {gender: inp.value}); paint(id+'_gender'); });
+    restore(q);
+  });
+}
+function paint(name){
+  document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+    const box = inp.closest('.opt');
+    if(box) box.classList.toggle('on', inp.checked);
+  });
+}
+function restore(q){
+  const a = answers[q.id] || {};
+  if(q.type==='multi' && Array.isArray(a.v)){
+    a.v.forEach(v => { document.querySelectorAll(`input[name="${q.id}"]`).forEach(inp => { if(inp.value===v) inp.checked=true; }); });
+    paint(q.id);
+  } else if(q.type==='single' && a.v){
+    document.querySelectorAll(`input[name="${q.id}"]`).forEach(inp => { if(inp.value===String(a.v)) inp.checked=true; });
+    paint(q.id);
+  }
+  if(a.other){ const o=document.querySelector(`[data-other="${q.id}"]`); if(o) o.value=a.other; }
+  if(a.text){ const t=document.querySelector(`[data-text="${q.id}"]`); if(t) t.value=a.text; }
+  if(a.extra){ const t=document.querySelector(`[data-extra="${q.id}"]`); if(t) t.value=a.extra; }
+  if(a.matrix){ document.querySelectorAll(`[data-mx="${q.id}"]`).forEach(s => { const lab=q.rows[s.dataset.row]; if(a.matrix[lab]) s.value=a.matrix[lab]; }); }
+  if(q.type==='nps' && a.v!=null){ document.querySelectorAll(`[data-nps="${q.id}"]`).forEach(b => b.classList.toggle('on', b.dataset.n===String(a.v))); }
+  if(a.scores){
+    document.querySelectorAll(`[data-score="${q.id}"]`).forEach(b => {
+      const lab = q.rows[b.dataset.row];
+      b.classList.toggle('on', String(a.scores[lab])===String(b.dataset.n));
+    });
+  }
+  if(a.fills){ document.querySelectorAll(`[data-fill="${q.id}"]`).forEach((inp,i)=>{ if(a.fills[i]) inp.value=a.fills[i]; }); }
+  if(a.age){ document.querySelectorAll(`input[name="${q.id}_age"]`).forEach(inp => { if(inp.value===a.age) inp.checked=true; }); paint(q.id+'_age'); }
+  if(a.gender){ document.querySelectorAll(`input[name="${q.id}_gender"]`).forEach(inp => { if(inp.value===a.gender) inp.checked=true; }); paint(q.id+'_gender'); }
+  syncOther(q.id);
+}
+function syncOther(id){
+  const oth = document.querySelector(`[data-other="${id}"]`);
+  if(!oth) return;
+  const a = answers[id] || {};
+  const show = a.v === 'other' || (Array.isArray(a.v) && a.v.indexOf('other') >= 0);
+  oth.style.display = show ? '' : 'none';
+}
+function choiceText(q, v){
+  for(const o of (q.opts || [])){
+    if(String(valOf(o)) === String(v)) return String(labelOf(o));
+  }
+  return String(v);
+}
+
+function formatSummary(){
+  const lines = [UI.summaryHead, ''];
+  DATA.forEach(q => {
+    const a = answers[q.id];
+    if(!a) return;
+    const bits = [];
+    if(Array.isArray(a.v)) bits.push(a.v.map(v => choiceText(q, v)).join('; '));
+    else if(a.v!=null && a.v!=='') bits.push(choiceText(q, a.v));
+    if(a.matrix) Object.entries(a.matrix).forEach(([k,v]) => bits.push(k+': '+v));
+    if(a.scores) Object.entries(a.scores).forEach(([k,v]) => bits.push(k+': '+v));
+    if(a.fills) a.fills.forEach((v,i)=>(v?bits.push((q.fills?q.fills[i]:i)+': '+v):0));
+    if(a.age) bits.push(UI.ageBit+': '+a.age);
+    if(a.gender) bits.push(UI.genderBit+': '+a.gender);
+    if(a.text) bits.push(a.text);
+    if(a.extra) bits.push(a.extra);
+    if(a.other) bits.push(UI.otherBit+': '+a.other);
+    if(!bits.filter(Boolean).length) return;
+    lines.push(q.n + '. ' + q.title);
+    bits.filter(Boolean).forEach(b => lines.push('  - ' + b));
+    lines.push('');
+  });
+  return lines.join('\n');
+}
+
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbyUSQjZQ-DaxJUYgO7oOPx4FTC3yURuqeDX7bHbVioTjIB4jzIi1u3Lxb4G0aa6S5reCQ/exec";
+const SHEET_TOKEN = "4349fa9c45f1e77f82f60fee3ef4b515f85c3fe6da1695b3";
+const SURVEY_LANG = "fr";
+
+function surveyClientId(){
+  const key = 'survey_client_' + SURVEY_LANG;
+  try {
+    let id = localStorage.getItem(key);
+    if(!id){
+      id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now());
+      localStorage.setItem(key, id);
+    }
+    return id;
+  } catch(e) {
+    return String(Date.now());
+  }
+}
+
+async function postSheet(summary){
+  if(!SHEET_URL || !SHEET_TOKEN) return null;
+  const clientId = surveyClientId();
+  const payload = {
+    token: SHEET_TOKEN,
+    lang: SURVEY_LANG,
+    client_id: clientId,
+    summary: summary,
+    json: answers,
+    test: String(clientId).indexOf('wire-test') === 0
+  };
+  try {
+    const res = await fetch(SHEET_URL, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(data && data.ok === true && data.row) return data;
+  } catch(e) {}
+  try {
+    const url = SHEET_URL + (SHEET_URL.indexOf('?') >= 0 ? '&' : '?')
+      + 'token=' + encodeURIComponent(SHEET_TOKEN)
+      + '&lang=' + encodeURIComponent(SURVEY_LANG)
+      + '&client_id=' + encodeURIComponent(payload.client_id);
+    const check = await fetch(url, { method: 'GET', redirect: 'follow' });
+    const data = await check.json();
+    if(data && data.ok === true && data.row) return data;
+  } catch(e) {}
+  return null;
+}
+
+async function submitAnswers(summary){
+  try{ localStorage.setItem('survey_last_' + SURVEY_LANG, summary); }catch(e){}
+  const msg = document.getElementById('msg');
+  const saved = await postSheet(summary);
+  if(msg) msg.textContent = saved ? UI.sent : UI.notSent;
+}
+
+render();
+</script>
+</body>
+</html>
